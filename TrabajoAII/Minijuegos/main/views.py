@@ -386,9 +386,9 @@ def populate_juegos():
         for row in doc:
             idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
             idSubcategoria = Subcategoria.objects.get(idSubcategoria=row['idSubcategoria'])
-            lista.append(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
+            lista.append(Juego(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
                 rating=row['rating'], numVotos=row['numVotos'], enlace=row['enlace'], numPartidas=row['numPartidas'],
-                idCategoria=idCategoria, idSubcategoria=idSubcategoria)
+                idCategoria=idCategoria, idSubcategoria=idSubcategoria))
     Juego.objects.bulk_create(lista)
     print('Juegos insertados: ' + str(Juego.objects.count()))
     print('--------------------------------------------------')
