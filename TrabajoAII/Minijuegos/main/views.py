@@ -348,8 +348,6 @@ def populate_categoria():
     ix = open_dir(categoria_directory)
     with ix.searcher() as searcher:
         doc = searcher.documents()
-        print(doc)
-        print('----------------------------------')
         for row in doc:
             lista.append(Categoria(idCategoria=row['idCategoria'], nombre=row['nombre'], 
             logo=row['logo'], enlace=row['enlace']))
@@ -368,9 +366,9 @@ def populate_subcategoria():
     with ix.searcher() as searcher:
         doc = searcher.documents()
         for row in doc:
-            #idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
+            idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
             lista.append(Subcategoria(idSubcategoria=row['idSubcategoria'], nombre=row['nombre'],
-             enlace=row['enlace'], idCategoria=row['idCategoria']))
+             enlace=row['enlace'], idCategoria=idCategoria))
     Subcategoria.objects.bulk_create(lista)
     print('Subcategorias insertadas: ' + str(Subcategoria.objects.count()))
     print('-------------------------------------------------')
@@ -386,10 +384,11 @@ def populate_juegos():
     with ix.searcher() as searcher:
         doc = searcher.documents()
         for row in doc:
-            lista.append(
-                idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
+            idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
+            idSubcategoria = Subcategoria.objects.get(idSubcategoria=row['idSubcategoria'])
+            lista.append(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
                 rating=row['rating'], numVotos=row['numVotos'], enlace=row['enlace'], numPartidas=row['numPartidas'],
-                idCategoria=row['idCategoria'], idSubcategoria=row['idSubcategoria'])
+                idCategoria=idCategoria, idSubcategoria=idSubcategoria)
     Juego.objects.bulk_create(lista)
     print('Juegos insertados: ' + str(Juego.objects.count()))
     print('--------------------------------------------------')
