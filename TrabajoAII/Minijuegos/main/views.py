@@ -385,8 +385,13 @@ def populate_juegos():
         doc = searcher.documents()
         for row in doc:
             idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
-            idSubcategoria = Subcategoria.objects.get(idSubcategoria=row['idSubcategoria'])
-            lista.append(Juego(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
+            if (int(row['idSubcategoria']) >1000):
+                lista.append(Juego(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
+                rating=row['rating'], numVotos=row['numVotos'], enlace=row['enlace'], numPartidas=row['numPartidas'],
+                idCategoria=idCategoria))
+            else:
+                idSubcategoria = Subcategoria.objects.get(idSubcategoria=row['idSubcategoria'])
+                lista.append(Juego(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
                 rating=row['rating'], numVotos=row['numVotos'], enlace=row['enlace'], numPartidas=row['numPartidas'],
                 idCategoria=idCategoria, idSubcategoria=idSubcategoria))
     Juego.objects.bulk_create(lista)

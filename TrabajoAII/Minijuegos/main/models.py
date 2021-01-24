@@ -37,7 +37,7 @@ class Juego(models.Model):
     #idCategoria = models.ManyToManyField('Categoria')
     #idSubcategoria = models.ManyToManyField('SubCategoria')
     idCategoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    idSubcategoria = models.ForeignKey(Subcategoria, on_delete=models.CASCADE)
+    idSubcategoria = models.ForeignKey(Subcategoria, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
         return self.title
