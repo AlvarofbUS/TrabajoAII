@@ -10,7 +10,7 @@ class Categoria(models.Model):
     enlace = models.URLField(max_length=150)
     
     def __str__(self):
-        return self.name
+        return self.nombre
 
 
 class Subcategoria(models.Model):
@@ -22,7 +22,7 @@ class Subcategoria(models.Model):
     #idCategoria = models.ManyToManyField('Categoria')
 
     def __str__(self):
-        return self.name
+        return self.nombre
 
 
 class Juego(models.Model):
