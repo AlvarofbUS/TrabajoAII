@@ -13,6 +13,10 @@
             juegos de la página minijuegos.
         </div>
     </div>
+    {% if not user %}
+    <a type="button" class="btn btn-info" href="ingresar">Ingresar</a>
+    <a type="button" class="btn btn-info" href="registrar">Registrarte</a>
+    {% endif %}
 </div>
 
 

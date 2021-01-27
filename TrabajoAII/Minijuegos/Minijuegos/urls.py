@@ -24,4 +24,11 @@ urlpatterns = [
     path('populate_django/', views.populateDjango),
     path('populate_whoosh/', views.populateWhoosh),
     path('ingresar/', views.ingresar),
+    path('registrar/', views.registrar),
+    path('logout', views.logout),
+    path('listaCategoria/', views.listaCategoria),
+    path('listaSubcategoria/<int:idCategoria>', views.getSubcategoriaByIdCategoria),
+    path('listaJuegosCategoria/<int:idCategoria>', views.getJuegosCategoriaByIdCategoria),
+    path('listaJuegosSubcategoria/<int:idSubcategoria>', views.getJuegosSubcategoriaByIdSubcategoria),
+    path('juego/<int:idJuego>', views.getJuegosSubcategoriaByIdSubcategoria),
     ]

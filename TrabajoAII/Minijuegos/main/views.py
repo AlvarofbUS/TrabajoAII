@@ -13,15 +13,21 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Avg, Count
 from django.conf import settings
 
 from main.models import Categoria, Subcategoria, Juego
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as do_login
+from django.contrib.auth import logout as do_logout
 
 
 def index(request):
-    return render(request, 'index.html', {'STATIC_URL': settings.STATIC_URL})
+    user = comprobarUsuario(request)
+    return render(request, 'index.html', {'STATIC_URL': settings.STATIC_URL, 'user': user})
 
 
 def extraer_datos():
@@ -151,7 +157,7 @@ def extraer_datos():
         s1 = BeautifulSoup(f1, 'lxml')
     
         juegos = s1.find('section', class_='full-container cat-games').find('div', class_='row-full').find_all('li')
-        for juego in juegos:
+        for juego in juegos[0:10]:
             #Enlace, titulo e imagen del juego
             enlace = juego.find('a', class_='media')['href'] if juego.find('a', class_='media') is not None else None
             titulo = juego.find('a', class_='media')['title'] if juego.find('a', class_='media') is not None and enlace is not None else None
@@ -187,13 +193,8 @@ def extraer_datos():
                             idSubcategoria = dicEnlaceIdSubcateg.get(l)
                         
                         writer3.add_document(idJuego = count_juego, enlace = enlace, titulo = titulo, imagen = imagen, rating = rating, numPartidas = numPartidas, numVotos = numTotalVotos, descripcion = descripcion, idCategoria = idCategoria, idSubcategoria = idSubcategoria)
-                        count_juego = count_juego + 1
-                        i = i + 1
                         print(count_juego)
-                        if i == 3: 
-                            i = 0
-                            break
-            break
+                        count_juego = count_juego + 1
     writer1.commit()
     writer2.commit()
     writer3.commit()
@@ -236,35 +237,14 @@ def schemaJuego():
     return schema
 
 
-def getIdCategoriaByEnlaceSubcategoria(enlace):
-    main_directory = 'main/info'
-    subcategoria_directory = main_directory + '/' + 'subcategoria'
-    ix = open_dir(subcategoria_directory)
-    with ix.searcher() as searcher:
-        entry = str(enlace)
-        query = QueryParser('enlace', ix.schema).parse(entry)
-        results = searcher.search(query)
-        row = results[3]
-        id = row['idCategoria']
-    return id
-
-'''
 @login_required(login_url='/ingresar')
-def populateWhoosh(request):
-    print('-------------------------------------------------')
-    extraer_datos()
-    logout(request)
-    return(HttpResponseRedirect('/index'))
-'''
-
-#@login_required(login_url='/ingresar_whoosh')
 def populateWhoosh(request):
     print('---------------------------------------------------------')
     extraer_datos()
     logout(request)
     return(HttpResponseRedirect('/index'))
 
-#@login_required(login_url='/ingresar')
+@login_required(login_url='/ingresar')
 def populateDjango(request):
     print('-------------------------------------------------')
     populate_categoria()
@@ -274,9 +254,10 @@ def populateDjango(request):
     return(HttpResponseRedirect('/index'))
 
 
+
 def ingresar(request):
     if request.user.is_authenticated:
-        return(HttpResponseRedirect(''))
+        return(HttpResponseRedirect('/'))
     formulario = AuthenticationForm()
     if request.method == 'POST':
         formulario = AuthenticationForm(request.POST)
@@ -286,7 +267,7 @@ def ingresar(request):
         if acceso is not None:
             if acceso.is_active:
                 login(request, acceso)
-                return (HttpResponseRedirect(''))
+                return (HttpResponseRedirect('/'))
             else:
                 return (HttpResponse('<html><body> Error: usuario no activo </body></html>'))
         else:
@@ -294,50 +275,32 @@ def ingresar(request):
     
     return render(request, 'ingresar.html', {'formulario':formulario})
 
-'''
-def ingresarWhoosh(request):
+
+def registrar(request):
     if request.user.is_authenticated:
-        return(HttpResponseRedirect('/populate_whoosh'))
-    formulario = AuthenticationForm()
-    if request.method == 'POST':
-        formulario = AuthenticationForm(request.POST)
-        usuario = request.POST['username']
-        clave = request.POST['password']
-        acceso = authenticate(username=usuario, password=clave)
-        if acceso is not None:
-            if acceso.is_active:
-                login(request, acceso)
-                return (HttpResponseRedirect('/populate_whoosh'))
-            else:
-                return (HttpResponse('<html><body>Error: usuario no activo </body></html>'))
-        else:
-            return (HttpResponse('<html><body><b>Error: usuario o contrase&ntilde;a incorrectos</b><br><a href=/index>Volver a la página principal</a></body></html>'))
+        return(HttpResponseRedirect('/'))
+    # Creamos el formulario de autenticación vacío
+    form = UserCreationForm()
+    if request.method == "POST":
+        # Añadimos los datos recibidos al formulario
+        form = UserCreationForm(data=request.POST)
+        # Si el formulario es válido...
+        if form.is_valid():
+            # Creamos la nueva cuenta de usuario
+            user = form.save()
+            # Si el usuario se crea correctamente 
+            if user is not None:
+                # Hacemos el login manualmente
+                do_login(request, user)
+                # Y le redireccionamos a la portada
+                return redirect('/')
+    # Si queremos borramos los campos de ayuda
+    form.fields['username'].help_text = None
+    form.fields['password1'].help_text = None
+    form.fields['password2'].help_text = None
 
-    return render(request, 'ingresar_whoosh.html', {'formulario': formulario})
-
-
-def ingresarDjango(request):
-    if request.user.is_authenticated:
-        return(HttpResponseRedirect('/populate_django'))
-    formulario = AuthenticationForm()
-    if request.method == 'POST':
-        formulario = AuthenticationForm(request.POST)
-        usuario = request.POST['username']
-        clave = request.POST['password']
-        print(clave)
-        print(usuario)
-        acceso = authenticate(username=usuario, password=clave)
-        if acceso is not None:
-            if acceso.is_active:
-                login(request, acceso)
-                return (HttpResponseRedirect('/populate_django'))
-            else:
-                return (HttpResponse('<html><body>Error: usuario no activo </body></html>'))
-        else:
-            return (HttpResponse('<html><body><b>Error: usuario o contrase&ntilde;a incorrectos</b><br><a href=/index>Volver a la página principal</a></body></html>'))
-
-    return render(request, 'ingresar_django.html', {'formulario': formulario})
-'''
+    # Si llegamos al final renderizamos el formulario
+    return render(request, "registrar.html", {'form': form})
 
 def populate_categoria():
     print('Cargando categorias...')
@@ -355,6 +318,11 @@ def populate_categoria():
     print('Categorias insertadas: ' + str(Categoria.objects.count()))
     print('------------------------------------------------')
 
+def logout(request):
+    # Finalizamos la sesión
+    do_logout(request)
+    # Redireccionamos a la portada
+    return redirect('/')
 
 def populate_subcategoria():
     print('Cargando subcategorias...')
@@ -398,8 +366,35 @@ def populate_juegos():
     print('Juegos insertados: ' + str(Juego.objects.count()))
     print('--------------------------------------------------')
 
-'''
-def getCategoriaByNombre(request):
-    formulario =  
+def comprobarUsuario(request):
+    if request.user.is_authenticated:
+        return request.user
+    else:
+        request.user = None
+        return request.user
 
-'''
+def listaCategoria(request):
+    user = comprobarUsuario(request)
+    categorias = Categoria.objects.all().order_by('idCategoria')
+    return render(request, 'listaCategoria.html', {'categorias': categorias, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+
+def getSubcategoriaByIdCategoria(request, idCategoria):
+    user = comprobarUsuario(request)
+    subcategorias = Subcategoria.objects.filter(idCategoria=idCategoria)
+    return render(request, 'listaSubcategoria.html', {'subcategorias': subcategorias, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+
+def getJuegosCategoriaByIdCategoria(request, idCategoria):
+    user = comprobarUsuario(request)
+    juegos = Juego.objects.filter(idCategoria=idCategoria)
+    return render(request, 'juegosCategoria.html', {'juegos': juegos, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+
+def getJuegosSubcategoriaByIdSubcategoria(request, idSubcategoria):
+    user = comprobarUsuario(request)
+    juegos = Juego.objects.filter(idSubcategoria=idSubcategoria)
+    return render(request, 'juegosCategoria.html', {'juegos': juegos, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+
+def getInformacionJuegoByIdJuego(request, idJuego):
+    user = comprobarUsuario(request)
+    juego = Juego.objects.get(idJuego=idJuego)
+    return render(request, 'juego.html', {'juego': juego, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+    

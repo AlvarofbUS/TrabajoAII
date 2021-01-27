@@ -19,28 +19,26 @@
     		</button>
     		<div class="collapse navbar-collapse" id="navbarNavDropdown">
     		    <ul class="navbar-nav">
-					<li class="nav-item dropdown">
-    			    	<a class="nav-link dropdown-toggle" href="/ingresar" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    			    		Ingresar
-    			    	</a>
-    			    	<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
-    			    		<a class="dropdown-item" href="/ingresar">Ingresar</a>
-    			    		
-    			    	</div>  
-    			    </li>
-
     			    <li class="nav-item dropdown">
-    			    	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    			    	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     			    		Acciones de poblar
-    			    	</a>
-                        {% if user %} {% endif %} 
-    			    	<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
-    			    		<a class="{% block poblarWhooshActiva %} {% endblock %}  dropdown-item" href="/populate_whoosh">Poblar Whoosh - Acceso Restringido</a>
-    			    		<a class="{% block poblarBDActiva %} {% endblock %}  dropdown-item" href="/populate_django">Poblar base de datos de Django - Acceso Restringido</a>
+    			    	</a> 
+    			    	<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
+    			    		<a class="{% block poblarWhooshActiva %} {% endblock %}  dropdown-item" href="/populate_whoosh">Poblar Whoosh</a>
+    			    		<a class="{% block poblarBDActiva %} {% endblock %}  dropdown-item" href="/populate_django">Poblar base de datos de Django</a>
     			    	</div>  
     			    </li>
 
+					<li class="nav-item dropdown">
+    			    	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Acciones de listar
+						</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
+							<a class="dropdown-item" href="/listaCategoria">Lista de categorias</a>
+						</div>
+					</li>
                 </ul>
+				<a type="button" class="btn btn-info" href="/logout">Logout</a>
     		</div>
     </nav>
 

@@ -1,0 +1,35 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Información juego {% endblock %}
+
+{% block contenido %}
+{% if user %}
+<div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center table-responsive">
+	<table class="table table-striped table-hover table-info" style="margin-bottom: 180px;">
+		<thead class="thead-dark">
+			<tr class="text-center">
+				<th class="align-middle" scope="col">#</th>
+				<th class="align-middle" scope="col">Titulo</th>
+                <th class="align-middle" scope="col">Imagen</th>
+				<th class="align-middle" scope="col">Enlace</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% regroup juegos by titulo as grouped %}
+			{% for group in grouped %}
+				{% for juego in group.list %}
+				<tr class="text-center">
+					<th class="align-middle" scope="row">{{forloop.parentloop.counter}}</th>
+					<td class="align-middle">{{juego.titulo}}</td>
+					<td class="align-middle"><img class="w-25 p-1" alt="Display Picture" src="{{juego.imagen}}" /></td>
+					<td class="align-middle">{{juego.enlace}}</td>
+					<td class="align-middle"><a type="button" class="btn btn-info" href="/juego/{{juego.idJuego}}">Ver informacion</a></td>
+
+				</tr>
+				{% endfor %}
+			{% endfor %}		
+		</tbody>
+	</table>
+</div>
+{% endif %}
+{% endblock %}
