@@ -28,7 +28,10 @@ urlpatterns = [
     path('logout', views.logout),
     path('listaCategoria/', views.listaCategoria),
     path('listaSubcategoria/<int:idCategoria>', views.getSubcategoriaByIdCategoria),
-    path('listaJuegosCategoria/<int:idCategoria>', views.getJuegosCategoriaByIdCategoria),
-    path('listaJuegosSubcategoria/<int:idSubcategoria>', views.getJuegosSubcategoriaByIdSubcategoria),
-    path('juego/<int:idJuego>', views.getJuegosSubcategoriaByIdSubcategoria),
+    path('juegosCategoria/<int:idCategoria>', views.getJuegosCategoriaByIdCategoria),
+    path('juegosSubcategoria/<int:idSubcategoria>', views.getJuegosSubcategoriaByIdSubcategoria),
+    path('juego/<int:idJuego>', views.getInformacionJuegoByIdJuego),
+    path('busquedaCategoria', views.getCategoriaByName),
+    path('busquedaSubcategoria', views.getSubcategoriaByName),
+    path('busquedaJuego', views.getJuegoByName),
     ]

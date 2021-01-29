@@ -19,6 +19,7 @@
     		</button>
     		<div class="collapse navbar-collapse" id="navbarNavDropdown">
     		    <ul class="navbar-nav">
+				{% if user %}
     			    <li class="nav-item dropdown">
     			    	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     			    		Acciones de poblar
@@ -37,12 +38,25 @@
 							<a class="dropdown-item" href="/listaCategoria">Lista de categorias</a>
 						</div>
 					</li>
+
+					<li class="nav-item dropdown">
+    			    	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Acciones de búsqueda
+						</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
+							<a class="dropdown-item" href="/busquedaCategoria">Búsqueda de categoria</a>
+							<a class="dropdown-item" href="/busquedaSubcategoria">Búsqueda de subcategoria</a>
+							<a class="dropdown-item" href="/busquedaJuego">Búsqueda de juego</a>
+						</div>
+					</li>
+					
                 </ul>
-				<a type="button" class="btn btn-info" href="/logout">Logout</a>
+				<a type="button" class="btn btn-info btn-sm ml-auto" href="/logout">Logout</a>
+				{% endif %}
     		</div>
     </nav>
 
-    <main style="background-color: #EDEEE9; background-size: cover;	background-position: center; background-repeat: repeat-y;">
+    <main style="background-color: #EDEEE9;background-size: cover;background-position: center;background-repeat: repeat-y;background-image: url(https://www.minijuegosgratis.com/v3/cdn/assets/653/1514474868653/wallpaper_2018_minijuegos.jpg);">
 		<div class="container">
 			<div class="row d-flex justify-content-center">
 				<h1 class="my-5 text-center">{% block titulo %} {% endblock %}</h1>

@@ -1,0 +1,39 @@
+{% extends 'master.html' %}
+
+{% block contenido %}
+{% if user %}
+<div class="jumbotron text-center col-6">
+    <form id="formulario" method="post" action='' class="form-signin">{% csrf_token %}
+        <fieldset class="form-group">
+            <label for="champion_name" class="h4">Nombre de la subcategoria</label>
+            <input class="form-control d-inline" type="text" name="nombreSubcategoria" id="nombreSubcategoria" placeholder="Nombre de la subcategoria" />
+            <button class="btn btn-secondary btn-block d-inline mt-2" type="submit">Realizar búsqueda</button>
+        </fieldset class="form-group">
+    </form>
+</div>
+{% endif %}
+
+{% if subcategoria %}
+<div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center table-responsive">
+    <table class="table table-striped table-hover table-info">
+		<thead class="thead-dark">
+            <tr class="text-center">
+				<th class="align-middle th-dark" colspan="4" scope="col">{{row.nombre}}</th>
+			</tr>
+			<tr class="text-center">
+				<th class="align-middle" scope="col">Nombre de la subcategoria</th>
+				<th class="align-middle" scope="col">Enlace</th>
+			</tr>
+		</thead>
+		<tbody>
+           <tr class="text-center">
+					<td class="align-middle">{{subcategoria.nombre}}</td>
+					<td class="align-middle">{{subcategoria.enlace}}</td>
+					<td class="align-middle"><a type="button" class="btn btn-info" href="/juegosSubcategoria/{{subcategoria.idSubcategoria}}">Ver juegos</a></td>
+
+				</tr>
+        </tbody>
+	</table>
+</div>
+{% endif %}
+{% endblock %}

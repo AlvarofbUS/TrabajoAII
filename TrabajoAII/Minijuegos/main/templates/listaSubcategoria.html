@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 
-{% block titulo %} Lista de Subcategorias {% endblock %}
+{% block titulo %} Lista de Subcategorias{% endblock %}
 
 {% block contenido %}
 {% if user %}
@@ -21,7 +21,7 @@
 					<th class="align-middle" scope="row">{{forloop.parentloop.counter}}</th>
 					<td class="align-middle">{{subcategoria.nombre}}</td>
 					<td class="align-middle">{{subcategoria.enlace}}</td>
-					<td class="align-middle"><a type="button" class="btn btn-info" href="/listaJuegosSubcategoria/{{subcategoria.idSubcategoria}}">Ver juegos</a></td>
+					<td class="align-middle"><a type="button" class="btn btn-info" href="/juegosSubcategoria/{{subcategoria.idSubcategoria}}">Ver juegos</a></td>
 				</tr>
 				{% endfor %}
 			{% endfor %}		

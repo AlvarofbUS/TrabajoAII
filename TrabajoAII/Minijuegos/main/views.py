@@ -13,7 +13,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.db.models import Avg, Count
 from django.conf import settings
 
@@ -23,6 +23,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login
 from django.contrib.auth import logout as do_logout
+
+from main.forms import CategoriaForm, SubcategoriaForm, JuegoForm
 
 
 def index(request):
@@ -244,6 +246,7 @@ def populateWhoosh(request):
     logout(request)
     return(HttpResponseRedirect('/index'))
 
+
 @login_required(login_url='/ingresar')
 def populateDjango(request):
     print('-------------------------------------------------')
@@ -254,10 +257,8 @@ def populateDjango(request):
     return(HttpResponseRedirect('/index'))
 
 
-
 def ingresar(request):
-    if request.user.is_authenticated:
-        return(HttpResponseRedirect('/'))
+    user = comprobarUsuario(request)
     formulario = AuthenticationForm()
     if request.method == 'POST':
         formulario = AuthenticationForm(request.POST)
@@ -273,12 +274,11 @@ def ingresar(request):
         else:
             return (HttpResponse('<html><body><b>Error: usuario o contrase&ntilde;a incorrectos</b><br><a href=/index>Volver a la página principal</a></body></html>'))
     
-    return render(request, 'ingresar.html', {'formulario':formulario})
+    return render(request, 'ingresar.html', {'formulario':formulario, 'user': user})
 
 
 def registrar(request):
-    if request.user.is_authenticated:
-        return(HttpResponseRedirect('/'))
+    user = comprobarUsuario(request)
     # Creamos el formulario de autenticación vacío
     form = UserCreationForm()
     if request.method == "POST":
@@ -300,7 +300,8 @@ def registrar(request):
     form.fields['password2'].help_text = None
 
     # Si llegamos al final renderizamos el formulario
-    return render(request, "registrar.html", {'form': form})
+    return render(request, "registrar.html", {'form': form, 'user': user})
+
 
 def populate_categoria():
     print('Cargando categorias...')
@@ -318,11 +319,13 @@ def populate_categoria():
     print('Categorias insertadas: ' + str(Categoria.objects.count()))
     print('------------------------------------------------')
 
+
 def logout(request):
     # Finalizamos la sesión
     do_logout(request)
     # Redireccionamos a la portada
     return redirect('/')
+
 
 def populate_subcategoria():
     print('Cargando subcategorias...')
@@ -366,6 +369,7 @@ def populate_juegos():
     print('Juegos insertados: ' + str(Juego.objects.count()))
     print('--------------------------------------------------')
 
+
 def comprobarUsuario(request):
     if request.user.is_authenticated:
         return request.user
@@ -373,28 +377,68 @@ def comprobarUsuario(request):
         request.user = None
         return request.user
 
+
 def listaCategoria(request):
     user = comprobarUsuario(request)
     categorias = Categoria.objects.all().order_by('idCategoria')
     return render(request, 'listaCategoria.html', {'categorias': categorias, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+
 
 def getSubcategoriaByIdCategoria(request, idCategoria):
     user = comprobarUsuario(request)
     subcategorias = Subcategoria.objects.filter(idCategoria=idCategoria)
     return render(request, 'listaSubcategoria.html', {'subcategorias': subcategorias, 'STATIC_URL': settings.STATIC_URL, 'user': user})
 
+
 def getJuegosCategoriaByIdCategoria(request, idCategoria):
     user = comprobarUsuario(request)
     juegos = Juego.objects.filter(idCategoria=idCategoria)
     return render(request, 'juegosCategoria.html', {'juegos': juegos, 'STATIC_URL': settings.STATIC_URL, 'user': user})
 
+
 def getJuegosSubcategoriaByIdSubcategoria(request, idSubcategoria):
     user = comprobarUsuario(request)
     juegos = Juego.objects.filter(idSubcategoria=idSubcategoria)
-    return render(request, 'juegosCategoria.html', {'juegos': juegos, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+    return render(request, 'juegosSubcategoria.html', {'juegos': juegos, 'STATIC_URL': settings.STATIC_URL, 'user': user})
+
 
 def getInformacionJuegoByIdJuego(request, idJuego):
     user = comprobarUsuario(request)
     juego = Juego.objects.get(idJuego=idJuego)
     return render(request, 'juego.html', {'juego': juego, 'STATIC_URL': settings.STATIC_URL, 'user': user})
     
+
+def getCategoriaByName(request):
+    user = comprobarUsuario(request)
+    formulario = CategoriaForm()
+    categoria = None
+    if request.method == 'POST':
+        formulario = CategoriaForm(request.POST)
+        if formulario.is_valid():
+            categoria = Categoria.objects.get(nombre=formulario.cleaned_data['nombreCategoria'])
+    return render(request, 'busquedaCategoria.html', {'formulario': formulario, 'categoria': categoria,'STATIC_URL': settings.STATIC_URL, 'user': user})
+
+
+def getSubcategoriaByName(request):
+    user = comprobarUsuario(request)
+    formulario = SubcategoriaForm()
+    subcategoria = None
+    if request.method == 'POST':
+        formulario = SubcategoriaForm(request.POST)
+        if formulario.is_valid():
+            subcategoria = Subcategoria.objects.get(nombre=formulario.cleaned_data['nombreSubcategoria'])
+    return render(request, 'busquedaSubcategoria.html', {'formulario': formulario, 'subcategoria': subcategoria,'STATIC_URL': settings.STATIC_URL, 'user': user})
+
+
+
+def getJuegoByName(request):
+    user = comprobarUsuario(request)
+    formulario = JuegoForm()
+    juego = None
+    if request.method == 'POST':
+        formulario = JuegoForm(request.POST)
+        if formulario.is_valid():
+            j = Juego.objects.filter(titulo=formulario.cleaned_data['tituloJuego'])
+            juego = j[0]
+    return render(request, 'busquedaJuego.html', {'formulario': formulario, 'juego': juego,'STATIC_URL': settings.STATIC_URL, 'user': user})
+
