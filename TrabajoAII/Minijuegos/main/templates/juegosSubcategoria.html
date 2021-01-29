@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 
-{% block titulo %} Lista de juegos de la subcategoria {% endblock %}
+{% block titulo %}<strong> Lista de juegos de la subcategoria </strong>{% endblock %}
 
 {% block contenido %}
 {% if user %}
@@ -12,6 +12,8 @@
 				<th class="align-middle" scope="col">Titulo</th>
                 <th class="align-middle" scope="col">Imagen</th>
 				<th class="align-middle" scope="col">Enlace</th>
+				<th class="align-middle" scope="col"></th>
+
 			</tr>
 		</thead>
 		<tbody>

@@ -1,11 +1,17 @@
-<h2>Registrar usuario</h2>
+{% extends 'master.html' %}
+{% block contenido %}
 
-<form method="POST">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <button type="submit">Registrar</button>
-</form>
+<div class="jumbotron text-center col-6">
+<h2>Registrar usuario</h2>
+    <form method="POST">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <button type="submit">Registrar</button>
+    </form>
 
 <hr />
 
+
 <a href="/ingresar">Iniciar sesión</a>
+</div>
+{% endblock %}

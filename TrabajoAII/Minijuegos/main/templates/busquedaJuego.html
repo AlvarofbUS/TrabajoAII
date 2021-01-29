@@ -3,9 +3,9 @@
 {% block contenido %}
 {% if user %}
 <div class="jumbotron text-center col-6">
+    <h1 class="card-title text-center">Búsqueda de Juego</h1>
     <form id="formulario" method="post" action='' class="form-signin">{% csrf_token %}
         <fieldset class="form-group">
-            <label for="champion_name" class="h4">Titulo del juego</label>
             <input class="form-control d-inline" type="text" name="tituloJuego" id="tituloJuego" placeholder="Nombre del juego" />
             <button class="btn btn-secondary btn-block d-inline mt-2" type="submit">Realizar búsqueda</button>
         </fieldset class="form-group">
@@ -21,6 +21,7 @@
 				<th class="align-middle" scope="col">Titulo del juego</th>
                 <th class="align-middle" scope="col">Imagen</th>
 				<th class="align-middle" scope="col">Enlace</th>
+                <th class="align-middle" scope="col"></th>
 			</tr>
 		</thead>
 		<tbody>

@@ -25,6 +25,7 @@ from django.contrib.auth import login as do_login
 from django.contrib.auth import logout as do_logout
 
 from main.forms import CategoriaForm, SubcategoriaForm, JuegoForm
+from main.populate import populate_categoria, populate_subcategoria, populate_juegos
 
 
 def index(request):
@@ -238,7 +239,6 @@ def schemaJuego():
     )
     return schema
 
-
 @login_required(login_url='/ingresar')
 def populateWhoosh(request):
     print('---------------------------------------------------------')
@@ -255,6 +255,8 @@ def populateDjango(request):
     populate_juegos()
     logout(request)
     return(HttpResponseRedirect('/index'))
+
+
 
 
 def ingresar(request):
@@ -275,6 +277,13 @@ def ingresar(request):
             return (HttpResponse('<html><body><b>Error: usuario o contrase&ntilde;a incorrectos</b><br><a href=/index>Volver a la página principal</a></body></html>'))
     
     return render(request, 'ingresar.html', {'formulario':formulario, 'user': user})
+
+def logout(request):
+    # Finalizamos la sesión
+    do_logout(request)
+    # Redireccionamos a la portada
+    return redirect('/')
+
 
 
 def registrar(request):
@@ -301,74 +310,6 @@ def registrar(request):
 
     # Si llegamos al final renderizamos el formulario
     return render(request, "registrar.html", {'form': form, 'user': user})
-
-
-def populate_categoria():
-    print('Cargando categorias...')
-    Categoria.objects.all().delete()
-    main_directory = 'main/info'
-    categoria_directory = main_directory + '/' + 'categoria'
-    lista = []
-    ix = open_dir(categoria_directory)
-    with ix.searcher() as searcher:
-        doc = searcher.documents()
-        for row in doc:
-            lista.append(Categoria(idCategoria=row['idCategoria'], nombre=row['nombre'], 
-            logo=row['logo'], enlace=row['enlace']))
-    Categoria.objects.bulk_create(lista)
-    print('Categorias insertadas: ' + str(Categoria.objects.count()))
-    print('------------------------------------------------')
-
-
-def logout(request):
-    # Finalizamos la sesión
-    do_logout(request)
-    # Redireccionamos a la portada
-    return redirect('/')
-
-
-def populate_subcategoria():
-    print('Cargando subcategorias...')
-    Subcategoria.objects.all().delete()
-    main_directory = 'main/info'
-    subcategoria_directory = main_directory + '/' + 'subcategoria'
-    lista = []
-    ix = open_dir(subcategoria_directory)
-    with ix.searcher() as searcher:
-        doc = searcher.documents()
-        for row in doc:
-            idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
-            lista.append(Subcategoria(idSubcategoria=row['idSubcategoria'], nombre=row['nombre'],
-             enlace=row['enlace'], idCategoria=idCategoria))
-    Subcategoria.objects.bulk_create(lista)
-    print('Subcategorias insertadas: ' + str(Subcategoria.objects.count()))
-    print('-------------------------------------------------')
-
-
-def populate_juegos():
-    print('Cargando juegos...')
-    Juego.objects.all().delete()
-    main_directory = 'main/info'
-    juegos_directory = main_directory + '/' + 'juegos'
-    lista = []
-    ix = open_dir(juegos_directory)
-    with ix.searcher() as searcher:
-        doc = searcher.documents()
-        for row in doc:
-            idCategoria = Categoria.objects.get(idCategoria=row['idCategoria'])
-            if (int(row['idSubcategoria']) >1000):
-                lista.append(Juego(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
-                rating=row['rating'], numVotos=row['numVotos'], enlace=row['enlace'], numPartidas=row['numPartidas'],
-                idCategoria=idCategoria))
-            else:
-                idSubcategoria = Subcategoria.objects.get(idSubcategoria=row['idSubcategoria'])
-                lista.append(Juego(idJuego=row['idJuego'], titulo=row['titulo'], imagen=row['imagen'], descripcion=row['descripcion'],
-                rating=row['rating'], numVotos=row['numVotos'], enlace=row['enlace'], numPartidas=row['numPartidas'],
-                idCategoria=idCategoria, idSubcategoria=idSubcategoria))
-    Juego.objects.bulk_create(lista)
-    print('Juegos insertados: ' + str(Juego.objects.count()))
-    print('--------------------------------------------------')
-
 
 def comprobarUsuario(request):
     if request.user.is_authenticated:
