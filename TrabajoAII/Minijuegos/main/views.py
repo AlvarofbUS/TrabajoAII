@@ -153,7 +153,7 @@ def extraer_datos():
     print('---------------------------------------------------------')
     print('Se han indexado ' + str(count_subcategoria-1) + ' subcategorias')
     print('---------------------------------------------------------')
-    i = 0
+   
     # Por cada una de las categorias posibles
     for l in todas:
         f1 = urllib.request.urlopen(l)
@@ -191,7 +191,6 @@ def extraer_datos():
                             idCategoria = dicEnlaceIdCateg.get(l)
                             idSubcategoria = idSubcategoria + 1
                         else:
-                            #idCategoria = getIdCategoriaByEnlaceSubcategoria(l)
                             idCategoria = dicEnlaceSubcategIdCateg.get(l)
                             idSubcategoria = dicEnlaceIdSubcateg.get(l)
                         
